@@ -6,6 +6,7 @@ import time
 
 default_timeout = 90000
 image_for_upload = '../assets/ocean-quotes-index-1624414741.jpg'
+expected_annotation_coordinates = [{'x': 300.74, 'y': 149.26, 'z': 0}, {'x': 902.21, 'y': 450.73, 'z': 0}]
 
 @pytest.fixture(scope="session")
 def setup(create_page_context):
@@ -74,13 +75,19 @@ def test_create_box_annotation(setup):
     page = setup.get('page')
     page.locator('//*[@id="tabs-panel"]/div[1]/div[1]/div/div/div[2]/div[2]').click()
     time.sleep(2)
-    image_id = page.locator('//*[@id="tabs-panel"]/div[2]/div/div/div/div/div[3]/div/div/div[2]/div/div[3]/div[1]/div[2]/div').text_content().lstrip().rstrip()
-    my_token = utils.get_authentication_token()
-    get_image_info = utils.get_item_info(item_id=image_id, token=my_token)
-    image_height = get_image_info['metadata']['system']['height']
-    image_width = get_image_info['metadata']['system']['width']
     page.locator('//*[@id="toolsMenu"]/div[4]/div/button/span[2]/span').click()
-    page.mouse.click(x=round(image_width/4), y=round(image_height/4), button="left")
-    page.mouse.click(x=round(3*(image_width/4)), y=round(3*(image_height/4)), button="left")
-
-
+    image_id = page.locator(
+        '//*[@id="tabs-panel"]/div[2]/div/div/div/div/div[3]/div/div/div[2]/div/div[3]/div[1]/div[2]/div').text_content().lstrip().rstrip()
+    image_container = page.locator('//*[@id="imageDisplayContainer"]/div/div/canvas[2]')
+    box = image_container.bounding_box()
+    annotation_coord = utils.calculate_annotation_starting_and_ending_point(box)
+    page.mouse.click(x=annotation_coord['annotation_x_start_point'], y=annotation_coord['annotation_y_start_point'])
+    time.sleep(1)
+    page.mouse.click(x=annotation_coord['annotation_x_end_point'], y=annotation_coord['annotation_y_end_point'])
+    page.locator('//*[@id="app"]/div/div[4]/div/div/div[1]/div/div/div[2]/div[3]/div[3]/div/div/div/div/button/span[2]/span/i').click()
+    my_token = utils.get_authentication_token()
+    annotation_details = utils.get_annotation_info(image_id, my_token)
+    try:
+        assert annotation_details[0]['coordinates'] == expected_annotation_coordinates
+    except AssertionError as e:
+        pytest.fail(f"Expected annotation coordinates are not as expected. Got {e} ")
