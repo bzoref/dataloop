@@ -1,0 +1,5 @@
+dl_platform_url = 'https://console.dataloop.ai/welcome?redirect=%2Fprojects'
+test_email = 'bzoref.adv@gmail.com'
+test_password = 'zu*C7RYaEa'
+org_name = 'boazorg'
+test_dataset = ' boaz-test-dataset '
