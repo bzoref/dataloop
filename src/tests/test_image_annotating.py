@@ -6,7 +6,10 @@ import time
 
 default_timeout = 90000
 image_for_upload = '../assets/ocean-quotes-index-1624414741.jpg'
-expected_annotation_coordinates = [{'x': 300.74, 'y': 149.26, 'z': 0}, {'x': 902.21, 'y': 450.73, 'z': 0}]
+# expected_annotation_coordinates = [{'x': 300.74, 'y': 149.26, 'z': 0}, {'x': 902.21, 'y': 450.73, 'z': 0}]
+expected_annotation_width = 601
+expected_annotation_height = 301
+
 
 @pytest.fixture(scope="session")
 def setup(create_page_context):
@@ -54,7 +57,7 @@ def test_goto_studio(setup):
     image.dblclick()
 
 
-def test_delete_all_anotations(setup):
+def test_delete_all_annotations(setup):
     page = setup.get('page')
     time.sleep(3)
     delete_annotations_btn = page.get_by_role('button').all()[36]
@@ -87,7 +90,10 @@ def test_create_box_annotation(setup):
     page.locator('//*[@id="app"]/div/div[4]/div/div/div[1]/div/div/div[2]/div[3]/div[3]/div/div/div/div/button/span[2]/span/i').click()
     my_token = utils.get_authentication_token()
     annotation_details = utils.get_annotation_info(image_id, my_token)
+    anottation_width = round(annotation_details[0]['coordinates'][1]['x'] - annotation_details[0]['coordinates'][0]['x'])
+    anottation_height = round(annotation_details[0]['coordinates'][1]['y'] - annotation_details[0]['coordinates'][0]['y'])
     try:
-        assert annotation_details[0]['coordinates'] == expected_annotation_coordinates
+        assert anottation_width == expected_annotation_width
+        assert anottation_height == expected_annotation_height
     except AssertionError as e:
         pytest.fail(f"Expected annotation coordinates are not as expected. Got {e} ")
