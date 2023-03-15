@@ -6,7 +6,6 @@ import time
 
 default_timeout = 90000
 image_for_upload = '../assets/ocean-quotes-index-1624414741.jpg'
-# expected_annotation_coordinates = [{'x': 300.74, 'y': 149.26, 'z': 0}, {'x': 902.21, 'y': 450.73, 'z': 0}]
 expected_annotation_width = 601
 expected_annotation_height = 301
 
