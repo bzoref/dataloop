@@ -60,7 +60,7 @@ def test_delete_all_annotations(setup):
     page = setup.get('page')
     time.sleep(3)
     delete_annotations_btn = page.get_by_role('button').all()[36]
-    all_annotations_button = page.get_by_role('checkbox').all()[0]
+    all_annotations_button = page.get_by_role('checkbox').all()[1]
     try:
         assert all_annotations_button.is_checked()
     except AssertionError:
